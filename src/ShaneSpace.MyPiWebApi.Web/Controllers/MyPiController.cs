@@ -1,4 +1,5 @@
 ﻿using AutoMapper;
+using Iot.Device.Hcsr04;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Logging;
 using ShaneSpace.MyPiWebApi.Models.Leds;
@@ -6,9 +7,13 @@ using ShaneSpace.MyPiWebApi.Services;
 using ShaneSpace.MyPiWebApi.Web.CommandModels.MyPi;
 using ShaneSpace.MyPiWebApi.Web.ViewModels.MyPi;
 using System;
+using System.Collections.Generic;
 using System.Drawing;
+using System.Linq;
 using System.Net;
+using System.Threading;
 using System.Threading.Tasks;
+using UnitsNet;
 
 namespace ShaneSpace.MyPiWebApi.Web.Controllers
 {
@@ -157,6 +162,103 @@ namespace ShaneSpace.MyPiWebApi.Web.Controllers
         public IActionResult StopVideo()
         {
             _myPi.Camera.StopVideo();
+            return Ok();
+        }
+
+        /// <summary>
+        /// Set Display Text
+        /// </summary>
+        /// <returns></returns>
+        [HttpPost("display")]
+        public IActionResult SetDisplay(string text)
+        {
+            if (text == "hello")
+            {
+                _myPi.Display.HelloWorld();
+            }
+            else
+            {
+                _myPi.Display.SendMessage(text);
+            }
+
+            return Ok();
+        }
+
+        /// <summary>
+        /// Display Alien
+        /// </summary>
+        /// <returns></returns>
+        [HttpPost("display/alien")]
+        public IActionResult DisplayAlien()
+        {
+            _myPi.Display.DisplayAlien();
+            return Ok();
+        }
+
+        /// <summary>
+        /// Display Clock
+        /// </summary>
+        /// <returns></returns>
+        [HttpPost("display/clock")]
+        public IActionResult DisplayClock()
+        {
+            _myPi.Display.DisplayClock();
+            return Ok();
+        }
+
+        /// <summary>
+        /// Display temp
+        /// </summary>
+        /// <returns></returns>
+        [HttpPost("display/temp")]
+        public IActionResult DisplayTemp()
+        {
+            try
+            {
+                var data = _myPi.GetTemperatureAndHumidityData();
+                var temperature = data.Temperature;
+                var humidity = data.Humidity;
+                _myPi.Display.SendMessage($"Temp: {Math.Round(temperature.DegreesFahrenheit, 1)} \u00B0F{Environment.NewLine}Humidity: {Math.Round(humidity.Percent, 1)} %");
+            }
+            catch (Exception)
+            {
+                _myPi.Display.SendMessage("Error reading DHT sensor");
+                throw;
+            }
+
+            return Ok();
+        }
+
+        /// <summary>
+        /// Clear Display
+        /// </summary>
+        /// <returns></returns>
+        [HttpPost("display/clear")]
+        public IActionResult ClearDisplay()
+        {
+            _myPi.Display.ClearScreen();
+            return Ok();
+        }
+
+        /// <summary>
+        /// Set contrast percentage
+        /// </summary>
+        /// <returns></returns>
+        [HttpPost("display/contrast")]
+        public IActionResult DisplayContrast(double percentage)
+        {
+            _myPi.Display.SetContrast(percentage);
+            return Ok();
+        }
+
+        /// <summary>
+        /// Display Demo
+        /// </summary>
+        /// <returns></returns>
+        [HttpPost("display/demo")]
+        public IActionResult DisplayDemo()
+        {
+            _myPi.Display.Demo();
             return Ok();
         }
     }

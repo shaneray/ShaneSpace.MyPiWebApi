@@ -11,6 +11,8 @@ using Serilog;
 using ShaneSpace.MyPiWebApi.Services;
 using ShaneSpace.MyPiWebApi.Web.MappingProfiles;
 using System;
+using System.Diagnostics;
+using System.IO;
 using System.Text.Json.Serialization;
 
 namespace ShaneSpace.MyPiWebApi.Web
@@ -149,6 +151,11 @@ namespace ShaneSpace.MyPiWebApi.Web
             autoMapper.ConfigurationProvider.AssertConfigurationIsValid();
 
             app.ApplicationServices.GetRequiredService<IMyPiService>();
+
+            Console.WriteLine($"Launched from {Environment.CurrentDirectory}");
+            Console.WriteLine($"Physical location {AppDomain.CurrentDomain.BaseDirectory}");
+            Console.WriteLine($"AppContext.BaseDir {AppContext.BaseDirectory}");
+            Console.WriteLine($"Runtime Call {Path.GetDirectoryName(Process.GetCurrentProcess().MainModule.FileName)}");
         }
 
         private void RegisterApplicationServices(IServiceCollection serviceCollection)

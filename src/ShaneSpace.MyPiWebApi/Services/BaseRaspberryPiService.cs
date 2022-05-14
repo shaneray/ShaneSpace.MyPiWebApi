@@ -1,6 +1,8 @@
-﻿using Serilog;
+﻿using Iot.Device.Ssd13xx.Commands.Ssd1306Commands;
+using Serilog;
 using ShaneSpace.MyPiWebApi.Models;
 using ShaneSpace.MyPiWebApi.Models.Buttons;
+using ShaneSpace.MyPiWebApi.Models.Displays;
 using ShaneSpace.MyPiWebApi.Models.Leds;
 using System;
 using System.Collections.Generic;
@@ -18,6 +20,7 @@ namespace ShaneSpace.MyPiWebApi.Services
         protected List<ILed> Leds { get; } = new();
         protected List<IButton> Buttons { get; } = new();
         public Camera Camera { get; } = new();
+        public Ssd1306Display Display { get; }
 
         public BaseRaspberryPiService(IGpioService gpioService, ILogger logger)
         {
@@ -31,6 +34,8 @@ namespace ShaneSpace.MyPiWebApi.Services
                 new OnBoardLed(0, "Activity LED", logger)
             };
             Leds.AddRange(onBoardLeds);
+
+            Display = new Ssd1306Display(logger);
         }
 
         public RaspberryPiInfo GetInfo()
